@@ -6,7 +6,8 @@ int test() {
 }
 
 int test2(int a, bool b) {
-
+    print(a);
+    print(b);
 }
 
 int testret() {
@@ -14,6 +15,12 @@ int testret() {
 }
 
 void main() {
+    int a = input();
     test2(1 + 1 + testret(), false);
     test();
+
+    int c = 1;
+    int b = input();
+
+    print(c + b);
 }

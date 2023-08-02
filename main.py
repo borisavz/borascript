@@ -25,7 +25,7 @@ def execute_procedure(ast, proc, args):
         exit()
 
     for i in range(0, len(args)):
-        vars.set(proc.params[i], args[i])
+        vars.set(proc.params[i].name, args[i])
 
     if not hasattr(proc, 'statements'):
         return
@@ -37,6 +37,8 @@ def execute_procedure(ast, proc, args):
             execute_procedure_call(ast, s.procedure, vars)
         elif 'Declaration' == statement_type:
             execute_declaration(ast, s, vars)
+        elif 'Assignment' == statement_type:
+            execute_assignment(ast, s, vars)
         elif 'Return' == statement_type:
             if hasattr(s, 'val'):
                 return evaluate_expression(ast, s.val, vars)
@@ -44,6 +46,15 @@ def execute_procedure(ast, proc, args):
                 return
 
 def execute_procedure_call(ast, proc_call, vars):
+    if proc_call.name == 'input':
+        return int(input(">> "))
+    elif proc_call.name == 'print':
+        if proc_call.args is not None:
+            for a in proc_call.args:
+                print(evaluate_expression(ast, a.expr, vars))
+
+        return
+
     proc = next(filter(lambda p: p.name == proc_call.name, ast.procedures), None)
 
     if proc is not None:
@@ -59,11 +70,13 @@ def execute_procedure_call(ast, proc_call, vars):
         exit()
 
 def execute_declaration(ast, declaration, vars):
-    vars.set(declaration.name, 0)
+    vars.set(declaration.name, evaluate_expression(ast, declaration.rval, vars))
+
+def execute_assignment(ast, assignment, vars):
+    vars.set(assignment.lval.name, evaluate_expression(ast, assignment.rval, vars))
 
 def evaluate_expression(ast, expression, vars):
     expr_type = type(expression).__name__
-    print(expr_type)
 
     if 'E1' == expr_type:
         return evaluate_e1(ast, expression, vars)
