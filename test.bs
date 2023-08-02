@@ -9,7 +9,11 @@ int test2(int a, bool b) {
 
 }
 
+int testret() {
+    return 1000;
+}
+
 void main() {
+    test2(1 + 1 + testret(), false);
     test();
-    test2(1, false);
 }

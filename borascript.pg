@@ -14,11 +14,13 @@ Parameter: type=Type name=identifier;
 
 Statements: Statement*;
 
-Statement: Declaration | Assignment | ProcedureCallStatement;
+Statement: Declaration | Assignment | ProcedureCallStatement | Return;
 
 Declaration: type=Type name=identifier '=' rval=E1 ';';
 
 Assignment: lval=LVal '=' rval=E1 ';';
+
+Return: 'return' val=E1? ';';
 
 LVal: name=identifier;
 
@@ -28,23 +30,26 @@ ProcedureCall: name=identifier '(' args=Arguments ')';
 
 Arguments: Argument*[comma];
 
-Argument: E1;
+Argument: expr=E1;
 
-E1: E1 '+' E2
-  | E1 '-' E2
-  | E2;
+E1: l=E1 op='+' r=E2
+  | l=E1 op='-' r=E2
+  | val=E2;
 
-E2: E2 '*' E3
-  | E2 '/' E3
-  | E3;
+E2: l=E2 op='*' r=E3
+  | l=E2 op='/' r=E3
+  | val=E3;
 
-E3: E4 '^' E3
-  | E4;
+E3: l=E4 op='^' r=E3
+  | val=E4;
 
-E4: number
-  | identifier
-  | ProcedureCall
-  | '(' E1 ')';
+E4: num=number
+  | bool=Bool
+  | id=identifier
+  | proc=ProcedureCall
+  | '(' expr=E1 ')';
+
+Bool: 'true' | 'false';
 
 terminals
 number: /\d+(\.\d+)?/;
