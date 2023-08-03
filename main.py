@@ -30,20 +30,7 @@ def execute_procedure(ast, proc, args):
     if not hasattr(proc, 'statements'):
         return
 
-    for s in proc.statements:
-        statement_type = type(s).__name__
-
-        if 'ProcedureCallStatement' == statement_type:
-            execute_procedure_call(ast, s.procedure, vars)
-        elif 'Declaration' == statement_type:
-            execute_declaration(ast, s, vars)
-        elif 'Assignment' == statement_type:
-            execute_assignment(ast, s, vars)
-        elif 'Return' == statement_type:
-            if hasattr(s, 'val'):
-                return evaluate_expression(ast, s.val, vars)
-            else:
-                return
+    return execute_statements(ast, proc.statements, vars)
 
 def execute_procedure_call(ast, proc_call, vars):
     if proc_call.name == 'input':
@@ -74,6 +61,34 @@ def execute_declaration(ast, declaration, vars):
 
 def execute_assignment(ast, assignment, vars):
     vars.set(assignment.lval.name, evaluate_expression(ast, assignment.rval, vars))
+
+def execute_if(ast, if_stmt, vars):
+    if evaluate_expression(ast, if_stmt.expr, vars):
+        execute_statements(ast, if_stmt.statements, vars)
+
+def execute_while(ast, while_stmt, vars):
+    while evaluate_expression(ast, while_stmt.expr, vars):
+        execute_statements(ast, while_stmt.statements, vars)
+
+def execute_statements(ast, statements, vars):
+    for s in statements:
+        statement_type = type(s).__name__
+
+        if 'ProcedureCallStatement' == statement_type:
+            execute_procedure_call(ast, s.procedure, vars)
+        elif 'Declaration' == statement_type:
+            execute_declaration(ast, s, vars)
+        elif 'Assignment' == statement_type:
+            execute_assignment(ast, s, vars)
+        elif 'If' == statement_type:
+            execute_if(ast, s, vars)
+        elif 'While' == statement_type:
+            execute_while(ast, s, vars)
+        elif 'Return' == statement_type:
+            if hasattr(s, 'val'):
+                return evaluate_expression(ast, s.val, vars)
+            else:
+                return
 
 def evaluate_expression(ast, expression, vars):
     if hasattr(expression, 'op'):

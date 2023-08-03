@@ -14,13 +14,17 @@ Parameter: type=Type name=identifier;
 
 Statements: Statement*;
 
-Statement: Declaration | Assignment | ProcedureCallStatement | Return;
+Statement: Declaration | Assignment | ProcedureCallStatement | Return | If | While;
 
 Declaration: type=Type name=identifier '=' rval=E1 ';';
 
 Assignment: lval=LVal '=' rval=E1 ';';
 
 Return: 'return' val=E1? ';';
+
+If: 'if' '(' expr=E1 ')' '{' statements=Statements '}';
+
+While: 'while' '(' expr=E1 ')' '{' statements=Statements '}';
 
 LVal: name=identifier;
 
