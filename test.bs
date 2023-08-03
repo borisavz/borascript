@@ -14,7 +14,7 @@ int testret() {
     return 1000;
 }
 
-void main() {
+void old() {
     int a = input();
     test2(1 + 1 + testret(), false);
     test();
@@ -22,5 +22,9 @@ void main() {
     int c = 1;
     int b = input();
 
-    print(c + b);
+    print(5 + (1 > 2) - 1);
+}
+
+void main() {
+    print(5 + (1 > 2) - 1);
 }

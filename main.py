@@ -76,43 +76,36 @@ def execute_assignment(ast, assignment, vars):
     vars.set(assignment.lval.name, evaluate_expression(ast, assignment.rval, vars))
 
 def evaluate_expression(ast, expression, vars):
-    expr_type = type(expression).__name__
-
-    if 'E1' == expr_type:
-        return evaluate_e1(ast, expression, vars)
-    elif 'E2' == expr_type:
-        return evaluate_e2(ast, expression, vars)
-    elif 'E3' == expr_type:
-        return evaluate_e3(ast, expression, vars)
-    elif 'E4' == expr_type:
-        return evaluate_e4(ast, expression, vars)
-
-def evaluate_e1(ast, expression, vars):
-    if hasattr(expression, 'l'):
-        if expression.op == '+':
-            return evaluate_expression(ast, expression.l, vars) + evaluate_expression(ast, expression.r, vars)
-        else:
-            return evaluate_expression(ast, expression.l, vars) - evaluate_expression(ast, expression.r, vars)
-    else:
-        return evaluate_expression(ast, expression.val, vars)
-
-def evaluate_e2(ast, expression, vars):
-    if hasattr(expression, 'l'):
-        if expression.op == '*':
+    if hasattr(expression, 'op'):
+        if expression.op == '^':
+            return evaluate_expression(ast, expression.l, vars) ** evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '*':
             return evaluate_expression(ast, expression.l, vars) * evaluate_expression(ast, expression.r, vars)
-        else:
+        elif expression.op == '/':
             return evaluate_expression(ast, expression.l, vars) / evaluate_expression(ast, expression.r, vars)
-    else:
-        return evaluate_expression(ast, expression.val, vars)
-
-def evaluate_e3(ast, expression, vars):
-    if hasattr(expression, 'l'):
-        return evaluate_expression(ast, expression.l, vars) ** evaluate_expression(ast, expression.r, vars)
-    else:
-        return evaluate_expression(ast, expression.val, vars)
-
-def evaluate_e4(ast, expression, vars):
-    if hasattr(expression, 'num'):
+        elif expression.op == '+':
+            return evaluate_expression(ast, expression.l, vars) + evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '-':
+            return evaluate_expression(ast, expression.l, vars) - evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '<':
+            return evaluate_expression(ast, expression.l, vars) < evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '<=':
+            return evaluate_expression(ast, expression.l, vars) <= evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '>':
+            return evaluate_expression(ast, expression.l, vars) > evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '>=':
+            return evaluate_expression(ast, expression.l, vars) >= evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '==':
+            return evaluate_expression(ast, expression.l, vars) == evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '!=':
+            return evaluate_expression(ast, expression.l, vars) != evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '&&':
+            return evaluate_expression(ast, expression.l, vars) and evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '||':
+            return evaluate_expression(ast, expression.l, vars) or evaluate_expression(ast, expression.r, vars)
+        elif expression.op == '!':
+            return not evaluate_expression(ast, expression.r, vars)
+    elif hasattr(expression, 'num'):
         return int(expression.num)
     elif hasattr(expression, 'bool'):
         return bool(expression.bool)
@@ -120,7 +113,7 @@ def evaluate_e4(ast, expression, vars):
         return vars.get(expression.id)
     elif hasattr(expression, 'proc'):
         return execute_procedure_call(ast, expression.proc, vars)
-    else:
+    elif hasattr(expression, 'expr'):
         return evaluate_expression(ast, expression.expr, vars)
 
 g = Grammar.from_file("borascript.pg")

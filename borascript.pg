@@ -32,18 +32,21 @@ Arguments: Argument*[comma];
 
 Argument: expr=E1;
 
-E1: l=E1 op='+' r=E2
-  | l=E1 op='-' r=E2
-  | val=E2;
-
-E2: l=E2 op='*' r=E3
-  | l=E2 op='/' r=E3
-  | val=E3;
-
-E3: l=E4 op='^' r=E3
-  | val=E4;
-
-E4: num=number
+E1: l=E1 op='^' r=E1 {right, 7}
+  | l=E1 op='*' r=E1 {left, 6}
+  | l=E1 op='/' r=E1 {left, 6}
+  | l=E1 op='+' r=E1 {left, 5}
+  | l=E1 op='-' r=E1 {left, 5}
+  | l=E1 op="<" r=E1 {left, 4}
+  | l=E1 op="<=" r=E1 {left, 4}
+  | l=E1 op=">" r=E1 {left, 4}
+  | l=E1 op=">=" r=E1 {left, 4}
+  | l=E1 op="==" r=E1 {left, 3}
+  | l=E1 op="!=" r=E1 {left, 3}
+  | l=E1 op="&&" r=E1 {left, 2}
+  | l=E1 op="||" r=E1 {left, 1}
+  | op='!' r=E1
+  | num=number
   | bool=Bool
   | id=identifier
   | proc=ProcedureCall
